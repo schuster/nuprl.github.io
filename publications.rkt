@@ -1,5 +1,6 @@
 #lang scribble/text
 @(require racket/match
+          scriblib/bibtex
           "templates.rkt")
 
 @; string string string number (maybe string) -> elem?
@@ -510,9 +511,24 @@
                   2007
                   "http://www.ccs.neu.edu/home/amal/papers/htthol.pdf")))
 
+@(define (bibtex->pub-list path)
+   (define raw-entries (bibdb-raw (path->bibdb path)))
+   (for/list ([entry-attributes (hash-values raw-entries)])
+     ;; (fprintf (current-error-port) (hash-ref entry-attributes "title"))
+     (publication (hash-ref entry-attributes "title")
+                  (hash-ref entry-attributes "author")
+                  "venue"
+                  (hash-ref entry-attributes "year")
+                  "url")))
+
+@;; TODO: note where these entries came from on the web
+@(define olin-pubs (bibtex->pub-list "shivers.bib"))
+@;; TODO: @(define mitch-pubs (bibtex->pub-list "mitch.bib"))
+
 @(define publications
    (flatten (list mf-pubs
                   amal-pubs
+                  olin-pubs
                   old-site-pubs)))
 
 @(define (publication->html pub)
