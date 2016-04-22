@@ -517,9 +517,24 @@
      ;; (fprintf (current-error-port) (hash-ref entry-attributes "title"))
      (publication (hash-ref entry-attributes "title")
                   (hash-ref entry-attributes "author")
-                  "venue"
-                  (hash-ref entry-attributes "year")
+                  (bibtex-entry-venue entry-attributes)
+                  (string->number (hash-ref entry-attributes "year"))
                   "url")))
+
+@(define (bibtex-entry-venue entry)
+   (match (hash-ref entry 'type)
+     ["Article"
+      (hash-ref entry "journal")]
+     ["InProceedings"
+      (match (hash-ref entry "crossref" #f)
+        [#f (hash-ref entry "booktitle")]
+        [crossref crossref])]
+     ["TechReport"
+      (hash-ref entry "institution")
+      ]
+     ["PhdThesis"
+      (hash-ref entry "school")
+      ]))
 
 @;; TODO: note where these entries came from on the web
 @(define olin-pubs (bibtex->pub-list "shivers.bib"))
@@ -558,9 +573,11 @@
    (define grouped
      (group-by publication-year pubs)
      #;(reverse (sort pubs #:key publication-year)))
-   (for/list ([pubs (in-list grouped)])
-     (publication-group (sort pubs string<? #:key publication-venue)
-                        (publication-year (first pubs)))))
+   (define unsorted-groups
+     (for/list ([pubs (in-list grouped)])
+       (publication-group (sort pubs string<? #:key publication-venue)
+                          (publication-year (first pubs)))))
+   (sort unsorted-groups > #:key publication-group-year))
 
 @(define (publication-group->html pub-group)
    @list{
