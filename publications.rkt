@@ -1,6 +1,8 @@
 #lang scribble/text
 @(require racket/match
           scriblib/bibtex
+          (for-syntax syntax/parse
+                      racket/base)
           "templates.rkt")
 
 @; string string string number (maybe string) -> elem?
@@ -31,6 +33,16 @@
 @(define MSCS "Mathematical Structures in Computer Science (MSCS)")
 @(define LICS "Logic in Computer Science (LICS)")
 @(define DBPL "Database Programming Languages (DBPL)")
+@(define PLOS "Workshop on Programming Languages and Operating Systems (PLOS)")
+@(define VMCAI "Verification, Model Checking and Abstract Interpretation (VMCAI)")
+@(define DOW "Dynamic Objects Workshop (DOW)")
+@(define WCRE "Working Conference on Reverse Engineering (WCRE)")
+@(define ISOLA "International Symposium on Leveraging Applications of Formal Methods, Verification and Validation (ISoLA)")
+@(define WSA "Workshop on Static Analysis of Equational, Functional and Logic Programs")
+@(define PEPM "Partial Evaluation and Semantics-Based Program Manipulation (PEPM)")
+@(define CW "Workshop on Continuations (CW)")
+@(define SOSP "Symposium on Operating System Principles (SOSP)")
+@(define ASIAN "Asian Computing Science Conference (ASIAN)")
 
 @(define old-site-pubs
    (list
@@ -519,7 +531,7 @@
                   (hash-ref entry-attributes "author")
                   (bibtex-entry-venue entry-attributes)
                   (string->number (hash-ref entry-attributes "year"))
-                  "url")))
+                  (bibtex-entry-url entry-attributes))))
 
 @(define (bibtex-entry-venue entry)
    (match (hash-ref entry 'type)
@@ -528,13 +540,28 @@
      ["InProceedings"
       (match (hash-ref entry "crossref" #f)
         [#f (hash-ref entry "booktitle")]
-        [crossref crossref])]
+        [crossref
+         (conference-shorthand->venue crossref)])]
      ["TechReport"
-      (hash-ref entry "institution")
-      ]
+      (format "Technical Report ~a, ~a"
+              (hash-ref entry "number")
+              (hash-ref entry "institution"))]
      ["PhdThesis"
-      (hash-ref entry "school")
-      ]))
+      (format "PhD Dissertation, ~a" (hash-ref entry "school"))]))
+
+@(define (bibtex-entry-url entry)
+   (hash-ref entry "url" #f))
+
+@(define-syntax (crossref-match stx)
+   (syntax-parse stx
+     [(_ crossref venue-abbrev ...)
+      (with-syntax ([(venue-pattern ...)  (map (lambda (v) (format "^~a:" v)) (syntax->datum #`(venue-abbrev ...)))])
+        #`(cond
+            [(regexp-match? venue-pattern crossref) venue-abbrev] ...
+            [else (error 'crossref-match "Unmatched venue shorthand: ~s" crossref)]))]))
+
+@(define (conference-shorthand->venue crossref)
+   (crossref-match crossref ESOP PLOS ICFP VMCAI PLDI DOW WCRE ISOLA ECOOP WSA PEPM CW Scheme SOSP POPL ASIAN DLS))
 
 @;; TODO: note where these entries came from on the web
 @(define olin-pubs (bibtex->pub-list "shivers.bib"))

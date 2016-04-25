@@ -8,5 +8,4 @@ For Pubs
 * lookup venue and do that correctly
 * add URLs for everything (maybe...)
 * fix latex macros for titles
-* rename venue to "details" (or similar, for things like tech reports, theses,
-  etc.
+* add package dependency on the bibtex thing
