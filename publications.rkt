@@ -506,28 +506,39 @@
 @(define (bibtex->pub-list path)
    (define raw-entries (bibdb-raw (path->bibdb path)))
    (for/list ([entry-attributes (hash-values raw-entries)])
-     ;; (fprintf (current-error-port) (hash-ref entry-attributes "title"))
      (publication (hash-ref entry-attributes "title")
-                  (hash-ref entry-attributes "author")
+                  (bibtex-ref-backup entry-attributes "author" "editor")
                   (bibtex-entry-venue entry-attributes)
                   (string->number (hash-ref entry-attributes "year"))
                   (bibtex-entry-url entry-attributes))))
 
+@(define (bibtex-ref-backup entry . keys)
+   (let loop ([remaining-keys keys])
+     (match remaining-keys
+       [(list key other-keys ...)
+        (hash-ref entry key (lambda () (loop other-keys)))]
+       [(list) (error 'bibtex-ref-backup
+                      "Failed to find one of ~s in entry: ~s appropriate key for "
+                      entry
+                      keys)])))
+
 @(define (bibtex-entry-venue entry)
-   (match (hash-ref entry 'type)
-     ["Article"
-      (hash-ref entry "journal")]
-     ["InProceedings"
+   (match (string-downcase (hash-ref entry 'type))
+     ["article" (hash-ref entry "journal")]
+     ["book" (hash-ref entry "publisher")]
+     ["inproceedings"
       (match (hash-ref entry "crossref" #f)
         [#f (hash-ref entry "booktitle")]
         [crossref
          (conference-shorthand->venue crossref)])]
-     ["TechReport"
-      (format "Technical Report ~a, ~a"
-              (hash-ref entry "number")
+     ["techreport"
+      (define number (hash-ref entry "number" #f))
+      (format "Technical Report~a, ~a"
+              (if number (string-append " " number) "")
               (hash-ref entry "institution"))]
-     ["PhdThesis"
-      (format "PhD Dissertation, ~a" (hash-ref entry "school"))]))
+     ["phdthesis"
+      (format "PhD Dissertation, ~a" (hash-ref entry "school"))]
+     ["incollection" (hash-ref entry "booktitle")]))
 
 @(define (bibtex-entry-url entry)
    (hash-ref entry "biburl" #f))
@@ -545,12 +556,13 @@
 
 @;; TODO: note where these entries came from on the web
 @(define olin-pubs (bibtex->pub-list "shivers.bib"))
-@;; TODO: @(define mitch-pubs (bibtex->pub-list "mitch.bib"))
+@(define mitch-pubs (bibtex->pub-list "wand.bib"))
 
 @(define publications
    (flatten (list mf-pubs
                   amal-pubs
                   olin-pubs
+                  mitch-pubs
                   old-site-pubs)))
 
 @(define (publication->html pub)

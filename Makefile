@@ -6,7 +6,7 @@ all: setup $(TARGETS)
 setup:
 	raco pkg install --auto --skip-installed gregor
 
-publications.html: publications.rkt templates/*.html shivers.bib
+publications.html: publications.rkt templates/*.html shivers.bib wand.bib
 	if [ -f $@ ]; then chmod +w $@; fi
 	racket -t $< > $@
 	chmod -w $@

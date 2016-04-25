@@ -7,5 +7,9 @@ For Pubs
 * check that year ordering is correct
 * lookup venue and do that correctly
 * add URLs for everything (maybe...)
-* fix latex macros for titles
+* fix latex macros for titles and authors (Unicode issues?)
+  * maybe just one-off those into the rkt file
 * add package dependency on the bibtex thing
+* get rid of weird latex encodings
+* fix venues for Mitch pubs
+* fix super-long author lines
