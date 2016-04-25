@@ -61,21 +61,6 @@
                  "The 18th International Static Analysis Symposium"
                  2011
                  "http://www.ccs.neu.edu/home/dvanhorn/pubs/might-vanhorn-sas11.pdf")
-    (publication "Pushdown Flow Analysis of First-Class Control"
-                 "Dimitrios Vardoulakis and Olin Shivers"
-                 ICFP
-                 2011
-                 "http://www.ccs.neu.edu/home/dimvar/papers/cfa2-1st-class.pdf")
-    (publication "CFA2: a Context-Free Approach to Control-Flow Analysis"
-                 "Dimitrios Vardoulakis and Olin Shivers"
-                 "Logical Methods in Computer Science (LMCS)"
-                 2011
-                 "http://www.lmcs-online.org/ojs/viewarticle.php?id=705")
-    (publication "Ordering Multiple Continuations on the Stack"
-                 "Dimitrios Vardoulakis and Olin Shivers"
-                 "Partial Evaluation and Program Manipulation (PEPM)"
-                 2011
-                 "http://www.ccs.neu.edu/home/dimvar/papers/rcps-NU-CCIS-11-01.pdf")
     (publication "A Theory of Substructural Types and Control"
                  "Jesse A. Tov and Riccardo Pucella"
                  OOPSLA
@@ -106,11 +91,6 @@
                  TFP
                  2010
                  "http://www.ccs.neu.edu/home/stchang/pubs/Chang-VanHorn-Felleisen-TFP2010.pdf")
-    (publication "CFA2: a Context-Free Approach to Control-Flow Analysis"
-                 "Dimitrios Vardoulakis and Olin Shivers"
-                 ESOP
-                 2010
-                 "http://www.ccs.neu.edu/home/dimvar/papers/cfa2-NU-CCIS-10-01.pdf")
     (publication "Functional Adaptive Programming"
                  "Bryan Chadwick"
                  "PhD Dissertation, Northeastern University"
@@ -550,7 +530,7 @@
       (format "PhD Dissertation, ~a" (hash-ref entry "school"))]))
 
 @(define (bibtex-entry-url entry)
-   (hash-ref entry "url" #f))
+   (hash-ref entry "biburl" #f))
 
 @(define-syntax (crossref-match stx)
    (syntax-parse stx
