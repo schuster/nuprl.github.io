@@ -13,3 +13,4 @@ For Pubs
 * get rid of weird latex encodings
 * fix venues for Mitch pubs
 * fix super-long author lines
+* include only papers written while author was at NU
